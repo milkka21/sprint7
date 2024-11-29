@@ -17,7 +17,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 public class LoginCourierTest {
     private CourierRandom courierRandom = new CourierRandom();
-    private Credentials credentials;
     private CourierClient courierClient;
     private Courier courier;
     CourierAssertions courierAssertions;
@@ -27,17 +26,20 @@ public class LoginCourierTest {
     public void setUp() {
         courierClient = new CourierClient(BASE_URL);
         courier = courierRandom.random();
-        courierClient.create(courier);
-        credentials = Credentials.from(courier);
         courierAssertions = new CourierAssertions();
     }
     @Test
     @DisplayName("Логин курьера существующими данными")
     @Description("Можно войти с существующими данными")
     public void courierCanSuccessfullyLogin() {
+        courierClient.create(courier);
+        Credentials credentials = Credentials.from(courier);
+        
         ValidatableResponse responseLoginCourier = courierClient.login(credentials);
         courierAssertions.loggedInSuccessfully(responseLoginCourier);
+        idCourier = responseLoginCourier.extract().path("id");
     }
+
     @Test
     @DisplayName("Логин курьера без заполнения поля Логин")
     @Description("Попытка входа без заполнения поля Логин. Проверка сообщения об ошибке")
@@ -46,6 +48,7 @@ public class LoginCourierTest {
         ValidatableResponse responseLoginErrorMessage = courierClient.login(credentialsWithoutLogin).statusCode(400);
         responseLoginErrorMessage.assertThat().body("message", equalTo("Недостаточно данных для входа"));
     }
+
     @Test
     @DisplayName("Логин курьера без ввода пароля")
     @Description("Попытка входа без ввода пароля. Проверка сообщения об ошибке")
@@ -54,6 +57,7 @@ public class LoginCourierTest {
         ValidatableResponse responsePasswordErrorMessage = courierClient.login(credentialsWithoutLogin).statusCode(400);
         responsePasswordErrorMessage.assertThat().body("message", equalTo("Недостаточно данных для входа"));
     }
+
     @Test
     @DisplayName("Логин курьера без ввода логина И пароля")
     @Description("Попытка входа без ввода логина И пароля. Проверка сообщения об ошибке")
@@ -62,6 +66,7 @@ public class LoginCourierTest {
         ValidatableResponse responseWithoutLoginAndPasswordMessage = courierClient.login(credentialsWithoutLoginAndPassword).statusCode(400);
         responseWithoutLoginAndPasswordMessage.assertThat().body("message", equalTo("Недостаточно данных для входа"));
     }
+
     @Test
     @DisplayName("Логин курьера под несуществующим логином")
     @Description("Попытка входа с несуществующим логином. Проверка сообщения об ошибке")
@@ -70,6 +75,7 @@ public class LoginCourierTest {
         ValidatableResponse responseWithWithNotExistingLoginMessage = courierClient.login(credentialsWithNotExistingLogin).statusCode(404);
         responseWithWithNotExistingLoginMessage.assertThat().body("message", equalTo("Учетная запись не найдена"));
     }
+
     @After
     @Step("Удаление курьера")
     public void deleteCourier() {

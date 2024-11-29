@@ -12,8 +12,6 @@ import org.junit.Test;
 import static COURIER.Specif.BASE_URL;
 
 public class CourierAPITest {
-
-
     protected final CourierRandom random= new CourierRandom();
     private Courier courier;
     private CourierClient courierClient;
@@ -46,6 +44,7 @@ public class CourierAPITest {
         ValidatableResponse responseLoginCourier = courierClient.login(credentials);
         courierId = responseLoginCourier.extract().path("id");
     }
+
     @Test
     @DisplayName("Создание курьера без заполнения поля логин")
     @Description("Курьера нельзя создать без логина. Проверяем статус код и сообщение об ошибке")
@@ -55,7 +54,6 @@ public class CourierAPITest {
         courierAssertions.creationFailed(responseNullLogin);
     }
 
-
     @Test
     @DisplayName("Создание курьера без заполнения поля пароля")
     @Description("Курьера нельзя создать без пароля. Проверяем статус код и сообщение об ошибке")
@@ -64,6 +62,7 @@ public class CourierAPITest {
         ValidatableResponse responseNullPassword = courierClient.create(courier);
         courierAssertions.creationFailed(responseNullPassword);
     }
+
     @Test
     @DisplayName("Создание курьера без заполнения поля пароля и логина")
     @Description("Курьера нельзя создать без пароля и логина. Проверяем статус код и сообщение об ошибке")
@@ -73,14 +72,17 @@ public class CourierAPITest {
         ValidatableResponse responseNullFields = courierClient.create(courier);
         courierAssertions.creationFailed(responseNullFields);
     }
+
     @Test
     @DisplayName("Создание курьера с существующими данными")
     @Description("Создание курьера с существующими данными. Проверяем статус код и сообщение.")
     public void courierCanNotBeCreatedWithExistingCreds() {
         courierClient.create(courier);
+        Credentials credentials = Credentials.from(courier);
+        ValidatableResponse responseLoginCourier = courierClient.login(credentials);
+        courierId = responseLoginCourier.extract().path("id");
+
         ValidatableResponse responseCreateCourier = courierClient.create(courier);
         courierAssertions.existingCredsCreation(responseCreateCourier);
     }
-
-
 }
