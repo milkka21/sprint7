@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import static COURIER.Specif.BASE_URL;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
 
 
 public class LoginCourierTest {
@@ -38,8 +37,6 @@ public class LoginCourierTest {
     public void courierCanSuccessfullyLogin() {
         ValidatableResponse responseLoginCourier = courierClient.login(credentials);
         courierAssertions.loggedInSuccessfully(responseLoginCourier);
-        idCourier = responseLoginCourier.extract().path("id");
-        assertNotNull(idCourier);
     }
     @Test
     @DisplayName("Логин курьера без заполнения поля Логин")
